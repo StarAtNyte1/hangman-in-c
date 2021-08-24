@@ -3,68 +3,67 @@
 #include <stdbool.h>
 #include <time.h>
 #include <string.h>
-int i_rnd(int i);
-char* decrypt(char* code);
-void printBody(int mistakes, char* body);
+
+int random_numbers(int i);
+void man(int mistakes, char* body);
 void printWord(char* guess, int len);
 
 
 #define WORDS 10
 #define WORDLEN 40
-#define CHANCE 6
+#define MISTAKES 6
 
-bool srand_called = false;
 
 int main() {
 
-	printf("\n\t Be aware you can be hanged!!.");
-
-	printf("\n\n\t Rules : ");
 	printf("\n\t - Maximum 6 mistakes are allowed.");
-	printf("\n\t - All alphabet are in lower case.");
-	printf("\n\t - All words are name of very popular Websites. eg. Google");
-	printf("\n\t - If you enjoy continue, otherwise close it.");
+	printf("\n\t - Enter all characters in lower case.");
 
-	printf("\n\t Syntax : Alphabet");
-	printf("\n\t Example : a \n\n");
+	char texts[WORDS][WORDLEN] = {"able","about","account","acid","across","act","addition","adjustment","advertisement","after"};
+	
+	char *body = malloc(MISTAKES+1);
+	//malloc allocates a block of memory of 7 bytes and stores address in body pointer
 
-	char values[WORDS][WORDLEN] = {"N~mqOlJ^tZletXodeYgs","gCnDIfFQe^CdP^^B{hZpeLA^hv","7urtrtwQv{dt`>^}FaR]i]XUug^GI",
-									"aSwfXsxOsWAlXScVQmjAWJG","cruD=idduvUdr=gmcauCmg]","BQt`zncypFVjvIaTl]u=_?Aa}F",
-									"iLvkKdT`yu~mWj[^gcO|","jSiLyzJ=vPmnv^`N]^>ViAC^z_","xo|RqqhO|nNstjmzfiuoiFfhwtdh~",
-									"OHkttvxdp|[nnW]Drgaomdq"};
-	char *body = malloc(CHANCE+1);
-
-	int id = i_rnd(WORDS);
-	char *word = decrypt(values[id]);
+	int word_no = random_numbers(WORDS);
+	char *word = (texts[word_no]);
 	int len = strlen(word);
 	char *guessed = malloc(len);
-	char falseWord[CHANCE];
+	//guessed pointer stores memory location equal to the length of th word
+	char falseWord[MISTAKES];
+  //Falseword stores all the mistaken words.
 
-	memset(body, ' ', CHANCE+1);
+	memset(body, ' ', MISTAKES+1);
+	// memset fuction replaces the first mistakes+1 characters of body by space/s
 	memset(guessed, '_', len);
+	// memset fuction replaces the first mistakes+1 characters of guessed by space/s
+  
 	char guess;
-	bool found;
+	bool found ;
 	char* win;
 
 	int mistakes = 0;
-	setvbuf(stdin, NULL, _IONBF, 0);
 
 	do {
-
-		found = false;
+    found = false;
 		printf("\n\n");
-		printBody(mistakes, body);
+		man(mistakes, body);
 		printf("\n\n");
 		printf("\tFalse Letters : ");
-		if(mistakes == 0) printf("None\n");
+
+		if(mistakes == 0) printf("None for now\n");
 		for (int i = 0; i < mistakes; ++i)
 		{
 			printf("%c", falseWord[i]);
 		}
+		
 		printf("\n\n");
-		printWord(guessed, len);
-		printf("\tGive me a alphabet in lower case : ");
-		do {scanf("%c",&guess);} while ( getchar() != '\n' );
+		printWord(guessed, len);//prints the characters as the user guesses "-" for the characters not guessed 
+		printf("\tEnter a character in lower case : ");
+		
+		do {
+			scanf("%c",&guess);
+		} while ( getchar() != '\n' );
+		
 		for (int i = 0; i < len; ++i)
 		{
 			if(word[i] == guess) {
@@ -72,64 +71,47 @@ int main() {
 				guessed[i] = guess;
 			}	
 		}
+
 		if(!found) {
 			falseWord[mistakes] = guess;
 			mistakes += 1;
 		}
-		win = strchr(guessed, '_');
-	}while(mistakes < CHANCE && win != NULL);
+		win = strchr(guessed, '_'); //searches for the first appearance of space in guessed.
+	}while(mistakes < MISTAKES && win != NULL);
 
 	if(win == NULL) {
 		printf("\n");
 		printWord(guessed, len);
-		printf("\n\tCongrats! You have won : %s\n\n", word);
+		printf("\nHurrah! You have won , the word was : %s\n\n", word);
 	} else {
 		printf("\n");
-		printBody(mistakes, body);
-		printf("\n\n\tBetter try next time. Word was %s\n\n", word);
+		man(mistakes, body);
+		printf("\n\n\tBetter try next time. The word was %s\n\n", word);
 	}
 
-	free(body);
-	free(word);
-	free(guessed);
-	return EXIT_SUCCESS;
+
+	return 0;
 }
 
-
-
-int i_rnd(int i) {
-    if (!srand_called) {
-        srand(time(NULL) << 10);
-        srand_called = true;
-    }
-    return rand() % i;
+bool srand_called = false;
+//This function returns an remainder of an random number. srand here is used to seed rand() such tah it returns a different number on every execution
+int random_numbers(int i){
+	srand(time(0));
+  return rand() % i;
 }
 
-char* decrypt(char* code) {
-	int hash = ((strlen(code) - 3) / 3) + 2;
-	char* decrypt = malloc(hash);
-	char* toFree = decrypt;
-	char* word = code;
-	for (int ch = *code; ch != '\0'; ch = *(++code))
-	{
-		if((code - word + 2) % 3  == 1){
-			*(decrypt++) = ch - (word - code + 1) - hash;
-		}
-	}
-	*decrypt = '\0';
-	return toFree;
-}
+// man function is used to draw body parts of the man according to the mistake's number
 
-void printBody(int mistakes, char* body) {
+void man(int mistakes, char* body) {
 	printf("\tMistakes :%d\n", mistakes);
 	switch(mistakes) {
 
-		case 6: body[6] = '\\'; break;
-		case 5: body[5] = '/'; break;
-		case 4: body[4] = '\\'; break;
-		case 3: body[3] = '|'; break;
-		case 2: body[2] = '/'; break;
-		case 1: body[1] = ')', body[0] = '('; break;
+		case 6: body[6] = '\\'; break;//for sixth mistake
+		case 5: body[5] = '/'; break;//for fifth mistake
+		case 4: body[4] = '\\'; break;//for fourth mistake
+		case 3: body[3] = '|'; break;//for third mistake
+		case 2: body[2] = '/'; break;//for second mistake
+		case 1: body[1] = ')', body[0] = '('; break;//for first mistake
 		default: break;
 
 	}
@@ -144,6 +126,7 @@ void printBody(int mistakes, char* body) {
 	       body[3], body[4], body[5], body[6]);
 }
 
+//this functio is used to print the word as per the user's guesses.
 void printWord(char* guess, int len) {
 	printf("\t");
 	for (int i = 0; i < len; ++i)
