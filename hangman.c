@@ -1,3 +1,4 @@
+//Hangman in C
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -29,7 +30,7 @@ int main() {
 		}
 	}
 	//extracting words from file text.txt which contains 847 random words
-	
+	fclose(fp1);
 	char *body = malloc(7);
 	//malloc allocates a block of memory of 7 bytes and stores address in body pointer
 
@@ -63,7 +64,8 @@ int main() {
 		printf("\n\n");
 		printf("\tFalse Letters : ");
 
-		if(mistakes == 0) printf("None for now\n");
+		if(mistakes == 0) 
+		printf("None for now\n");
 		for (int i = 0; i < mistakes; ++i)
 		{
 			printf("%c", falsechar[i]);
@@ -106,8 +108,9 @@ int main() {
 		printf("\n\n\tBetter try next time. The word was %s\n\n", word);
 		//if there is a blank space remaining in the word the user is totally hanged and he/she loses.
 	}
-
-
+ 
+  free(body);  
+	free(guessed);
 	return 0;
 }
 
