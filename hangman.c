@@ -7,33 +7,45 @@
 int random_numbers(int i);
 void man(int mistakes, char* body);
 void printWord(char* guess, int len);
+void trimTrailing(char * str);
 
-
-#define WORDS 10
-#define WORDLEN 40
-#define MISTAKES 6
-
+typedef struct text{
+	char texts[40];
+}t;
 
 int main() {
 
 	printf("\n\t - Maximum 6 mistakes are allowed.");
 	printf("\n\t - Enter all characters in lower case.");
 
-	char texts[WORDS][WORDLEN] = {"able","about","account","acid","across","act","addition","adjustment","advertisement","after"};
+  FILE *fp1;
+	int o;
+	t shuffled[847];
+	fp1 = fopen("text.txt","r");
+	while(!feof(fp1)){
+		for(o=0;o<847;o++)
+		{
+			fgets(shuffled[o].texts,40,fp1);
+		}
+	}
+	//extracting words from file text.txt which contains 847 random words
 	
-	char *body = malloc(MISTAKES+1);
+	char *body = malloc(7);
 	//malloc allocates a block of memory of 7 bytes and stores address in body pointer
 
-	int word_no = random_numbers(WORDS);
-	char *word = (texts[word_no]);
-	int len = strlen(word);
-	char *guessed = malloc(len);
-	//guessed pointer stores memory location equal to the length of th word
-	char falseWord[MISTAKES];
-  //Falseword stores all the mistaken words.
+	int word_no = random_numbers(847);
+	char *word = (shuffled[word_no].texts);
+	trimTrailing(word);
 
-	memset(body, ' ', MISTAKES+1);
+	int len = strlen(word);
+  char *guessed = malloc(len);
+	//guessed pointer stores memory location equal to the length of the word
+	char falsechar[7];
+  //Falseword stores all the mistaken characters.
+
+	memset(body, ' ', 7);
 	// memset fuction replaces the first mistakes+1 characters of body by space/s
+	
 	memset(guessed, '_', len);
 	// memset fuction replaces the first mistakes+1 characters of guessed by space/s
   
@@ -53,7 +65,7 @@ int main() {
 		if(mistakes == 0) printf("None for now\n");
 		for (int i = 0; i < mistakes; ++i)
 		{
-			printf("%c", falseWord[i]);
+			printf("%c", falsechar[i]);
 		}
 		
 		printf("\n\n");
@@ -73,17 +85,20 @@ int main() {
 		}
 
 		if(!found) {
-			falseWord[mistakes] = guess;
+			falsechar[mistakes] = guess;
 			mistakes += 1;
 		}
-		win = strchr(guessed, '_'); //searches for the first appearance of space in guessed.
-	}while(mistakes < MISTAKES && win != NULL);
+		win = strchr(guessed, '_'); 
+		//searches for the first appearance of space in guessed.
+	}while(mistakes < 7 && win != NULL);
+  //runs until number of mistakes increases to 7
 
 	if(win == NULL) {
 		printf("\n");
 		printWord(guessed, len);
 		printf("\nHurrah! You have won , the word was : %s\n\n", word);
-	} else {
+	}
+	else {
 		printf("\n");
 		man(mistakes, body);
 		printf("\n\n\tBetter try next time. The word was %s\n\n", word);
@@ -126,7 +141,7 @@ void man(int mistakes, char* body) {
 	       body[3], body[4], body[5], body[6]);
 }
 
-//this functio is used to print the word as per the user's guesses.
+//this function is used to print the word as per the user's guesses.
 void printWord(char* guess, int len) {
 	printf("\t");
 	for (int i = 0; i < len; ++i)
@@ -134,4 +149,26 @@ void printWord(char* guess, int len) {
 		printf("%c ", guess[i]);
 	}
 	printf("\n\n");
+}
+
+//This function trims the trailing white spaces we get in the strings after reading from the file
+
+void trimTrailing(char * str)
+{
+    int index, i;
+
+    index = -1;
+
+    i = 0;
+    while(str[i] != '\0')
+    {
+        if(str[i] != ' ' && str[i] != '\t' && str[i] != '\n')
+        {
+            index= i;
+        }
+
+        i++;
+    }
+
+    str[index + 1] = '\0';
 }
