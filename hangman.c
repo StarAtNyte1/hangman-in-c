@@ -15,10 +15,10 @@ typedef struct text{
 
 int main() {
 
-	printf("\n\t - Maximum 6 mistakes are allowed.");
+	printf("\n\t - 7 mistakes and you will be hanged.");
 	printf("\n\t - Enter all characters in lower case.");
 
-  FILE *fp1;
+        FILE *fp1;
 	int o;
 	t shuffled[847];
 	fp1 = fopen("text.txt","r");
@@ -33,15 +33,16 @@ int main() {
 	char *body = malloc(7);
 	//malloc allocates a block of memory of 7 bytes and stores address in body pointer
 
-	int word_no = random_numbers(847);
+       	int word_no = random_numbers(847);
+	//choosing a random word from the list using the function radom_numbers
+	
 	char *word = (shuffled[word_no].texts);
 	trimTrailing(word);
-
-	int len = strlen(word);
-  char *guessed = malloc(len);
+        int len = strlen(word);	
+        char *guessed = malloc(len);
 	//guessed pointer stores memory location equal to the length of the word
 	char falsechar[7];
-  //Falseword stores all the mistaken characters.
+        //Falsechar stores all the mistaken characters.
 
 	memset(body, ' ', 7);
 	// memset fuction replaces the first mistakes+1 characters of body by space/s
@@ -91,17 +92,19 @@ int main() {
 		win = strchr(guessed, '_'); 
 		//searches for the first appearance of space in guessed.
 	}while(mistakes < 7 && win != NULL);
-  //runs until number of mistakes increases to 7
+        //runs until number of mistakes increases to 7
 
 	if(win == NULL) {
 		printf("\n");
 		printWord(guessed, len);
 		printf("\nHurrah! You have won , the word was : %s\n\n", word);
+		//if there is no blank space remaining in the word the user wins.
 	}
 	else {
 		printf("\n");
 		man(mistakes, body);
 		printf("\n\n\tBetter try next time. The word was %s\n\n", word);
+		//if there is a blank space remaining in the word the user is totally hanged and he/she loses.
 	}
 
 
